@@ -20,7 +20,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "0 8,12,17,21 * * *"
+              "expression": "0 12,21 * * *"
             }
           ]
         }
@@ -73,9 +73,11 @@
     {
       "parameters": {
         "chatId": "-1002160652884",
-        "text": "=Top 5 PH Projects\n\nProject Name: {{$json[\"Name\"]}}\n\n**Tagline:** {{$json[\"Tagline\"]}}\n\n**Description:** {{$json[\"Description\"]}}\n\n**Website:** [Visit Here]({{$json[\"Website\"]}})\n\n**Votes:** {{$json[\"Votes\"]}}\n-------",
+        "text": "=Top 5 PH Projects\n\nProject Name: \n{{$json[\"Name\"]}}\n\nTagline: \n{{$json[\"Tagline\"]}}\n\nDescription: \n{{$json[\"Description\"]}}\n\nWebsite: \n{{$json[\"Website\"]}}\n\nVotes: {{$json[\"Votes\"]}}",
         "additionalFields": {
-          "parse_mode": "Markdown"
+          "appendAttribution": false,
+          "disable_web_page_preview": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "c6edd56d-d46e-4874-9a1e-e9b996a82bac",
