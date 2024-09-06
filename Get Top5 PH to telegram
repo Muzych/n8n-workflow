@@ -85,8 +85,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1600,
-        340
+        1880,
+        380
       ],
       "credentials": {
         "telegramApi": {
@@ -157,6 +157,48 @@
         1240,
         340
       ]
+    },
+    {
+      "parameters": {
+        "model": "=deepseek-chat",
+        "prompt": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "=请你返回以下信息，其中description部分请用中文翻译:\n{\n  'Votes': {{ $json.Votes }},\n  'Name': '{{ $json.Name }}',\n  'Description': '{{ $json.Description }}',\n  'Tagline': '{{ $json.Tagline }}',\n  'Website': '{{ $json.Website }}'\n}  "
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "4b4935d2-aef6-406d-af66-9598d828956e",
+      "name": "DeepSeek",
+      "type": "n8n-nodes-deepseek.deepSeek",
+      "typeVersion": 1.1,
+      "position": [
+        1420,
+        460
+      ],
+      "credentials": {
+        "deepSeekApi": {
+          "id": "XXd9oSWAIMuPtoDe",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function extractField(jsonString, fieldName) {\n  // 使用正则表达式提取字段值\n  const regex = new RegExp(`'${fieldName}':\\\\s*'([^']*)'`);\n  const match = jsonString.match(regex);\n  return match ? match[1] : null;\n}\n\nfunction extractVotes(jsonString) {\n  // 专门用于提取 Votes 的函数，因为它是数字而不是字符串\n  const match = jsonString.match(/'Votes':\\s*(\\d+)/);\n  return match ? parseInt(match[1]) : null;\n}\n\nfor (const item of $input.all()) {\n  const content = item.json.message.content;\n\n  item.json.Votes = extractVotes(content);\n  item.json.Name = extractField(content, 'Name');\n  item.json.Description = extractField(content, 'Description');\n  item.json.Tagline = extractField(content, 'Tagline');\n  item.json.Website = extractField(content, 'Website');\n}\n\nreturn $input.all();"
+      },
+      "id": "c779500b-6b60-4c7f-81d8-9baa652bc3d8",
+      "name": "Extract from LLM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        580
+      ]
     }
   ],
   "connections": {
@@ -216,6 +258,28 @@
       ]
     },
     "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "DeepSeek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek": {
+      "main": [
+        [
+          {
+            "node": "Extract from LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from LLM": {
       "main": [
         [
           {
