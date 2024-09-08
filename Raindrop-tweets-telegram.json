@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "instanceId": "6d47937438eab47ac9fe2489aa36ca84252e3e1285b2c1a65491be339e8d9145"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "bookmark",
+        "operation": "getAll",
+        "collectionId": "={{ 46426882 }}"
+      },
+      "id": "e32648cd-8a50-4876-9c65-ee443a51f34c",
+      "name": "Raindrop",
+      "type": "n8n-nodes-base.raindrop",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        140
+      ],
+      "credentials": {
+        "raindropOAuth2Api": {
+          "id": "tqsEoPbwlRObfkXz",
+          "name": "Raindrop account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "@muziyancheng",
+        "text": "=🐦  {{ $json.title }} #bookmark #tweets\n{{ $json.excerpt }}\n\nNote:\n {{ $json.note }}\n\n {{ $json.link }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        380,
+        60
+      ],
+      "id": "3b7d37ff-50e4-49b1-ab65-bbc28f42e63a",
+      "credentials": {
+        "telegramApi": {
+          "id": "Dc1A5U1EMbzXE4hK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "/* only return new items */\nconst staticData = getWorkflowStaticData('global');\nconst lastItemId = staticData.lastItemId;\n\nconsole.log('lastItemId', lastItemId);\nconst firstItem = items[0];\nlet newItems = [];\n\nfunction getId(item) {\n  return item.json.guid;\n}\n\nif (lastItemId) {\n  for (const item of items) {\n    if (getId(item) === lastItemId) {\n      break;\n    }\n    newItems.push(item)\n  }\n} else {\n  newItems = [firstItem]\n}\n\nstaticData.lastItemId = getId(firstItem)\nreturn newItems.reverse()"
+      },
+      "name": "Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        80
+      ],
+      "id": "5f1df753-0de5-4a2f-b2a4-3f7365016871"
+    },
+    {
+      "parameters": {
+        "interval": 15,
+        "unit": "minutes"
+      },
+      "name": "Interval",
+      "type": "n8n-nodes-base.interval",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        160
+      ],
+      "id": "52a3c7e5-5de0-4974-8ce8-0a57e713ffa6"
+    }
+  ],
+  "connections": {
+    "Raindrop": {
+      "main": [
+        [
+          {
+            "node": "Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interval": {
+      "main": [
+        [
+          {
+            "node": "Raindrop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}
